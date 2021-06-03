@@ -90,7 +90,7 @@ git_cococo_options() {
 
 create_commit_message() {
   cat <<EOF
-:shell: $(git_cococo_options)$(escape_command_line "$@")
+🐚 (chore): $(git_cococo_options)$(escape_command_line "$@")
 EOF
 }
 
