@@ -1,8 +1,10 @@
 # `git cococo`: git COmmit COmpletely COmmand output
 
 [![License X11](https://img.shields.io/badge/license-X11-blue.svg)](https://raw.githubusercontent.com/nishidayuya/git-cococo/master/LICENSE.txt)
-[![Build Status](https://img.shields.io/travis/nishidayuya/git-cococo/master.svg)](https://travis-ci.org/nishidayuya/git-cococo)
-[![Build Status](https://img.shields.io/appveyor/ci/nishidayuya/git-cococo/master.svg)](https://ci.appveyor.com/project/nishidayuya/git-cococo)
+[![Latest tag](https://img.shields.io/github/v/tag/nishidayuya/git-cococo)](https://github.com/nishidayuya/git-cococo/tags)
+[![Build Status](https://github.com/nishidayuya/git-cococo/workflows/ubuntu/badge.svg)](https://github.com/nishidayuya/git-cococo/actions?query=workflow%3Aubuntu)
+[![Build Status](https://github.com/nishidayuya/git-cococo/workflows/windows/badge.svg)](https://github.com/nishidayuya/git-cococo/actions?query=workflow%3Awindows)
+[![Build Status](https://github.com/nishidayuya/git-cococo/workflows/macos/badge.svg)](https://github.com/nishidayuya/git-cococo/actions?query=workflow%3Amacos)
 
 ## Requirements
 
@@ -20,37 +22,81 @@ $ mv git-cococo move-to-PATH-env-directory/
 
 ## Usage
 
-Run `sed` command and commit its changes with commit message "run: git cococo sed -i -e s/foo/bar/g a.txt".
+Run `sed` command and commit changes with re-runnable commit message "run: git cococo sed -i -e s/foo/bar/g a.txt".
 
 ```sh
 $ git cococo sed -i -e s/foo/bar/g a.txt
 ```
 
-Replace `writed` to `wrote` all of git tracked files and commit with re-runnable commit message.
+---
+
+Oops! I forgot un-commmitted changes. `git cococo` tells me it and don't run command.
+
+```sh
+$ git cococo sed -i -e s/foo/bar/g a.txt
+Detects following uncommitted changes:
+
+     M b.txt
+    ?? c.txt
+
+Run "git stash" and retry "git cococo":
+
+    $ git stash --include-untracked &&
+      git cococo sed -i -e s/foo/bar/g a.txt &&
+      git stash pop
+
+Or, use "--autostash" option:
+
+    $ git cococo --autostash sed -i -e s/foo/bar/g a.txt
+```
+
+Replace `writed` to `wrote` all of git tracked files and commit.
 
 ```sh
 $ git cococo sh -c 'git ls-files -z | xargs -0 sed -i -e s/writed/wrote/g'
 ```
 
-Examples for Rubyists:
+## Examples
+
+### for Rubyists
 
 ```sh
 $ git cococo --init bundle init
+$ git cococo rbenv local 2.7.0
 $ git cococo bundle add rake
 $ git cococo bundle update nokogiri
 
 $ n=new_awesome_gem && git cococo --init=$n bundle gem $n
 
 $ n=blog && git cococo --init=$n rails new $n
+$ cd $n
 $ git cococo bin/rails generate scaffold post title body:text published_at:datetime
 $ git cococo bin/rails db:migrate
 ```
 
-Examples for Noders:
+### for JavaScripters
 
 ```sh
 $ git cococo --init npm init --yes
-$ git cococo npm install --save xmlhttprequest
+$ git cococo sh -c 'echo /node_modules | tee -a .gitignore'
+$ git cococo npm install --save express
+$ git cococo npm install --save-dev mocha
+```
+
+### for Pythonistas
+
+```sh
+$ git cococo --init pyenv local 3.8.1
+$ git cococo touch requirements.txt
+$ git cococo sh -c 'echo /venv | tee -a .gitignore'
+$ python -m venv venv
+$ git cococo sh -ex -c '
+    . venv/bin/activate
+    pip install -r requirements.txt
+    pip install --upgrade pip
+    pip install tensorflow
+    pip freeze | tee requirements.txt
+  '
 ```
 
 ## Contributing
